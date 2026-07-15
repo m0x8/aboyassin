@@ -13,6 +13,7 @@
       --border:#e0e6e0;
       --text:#1f2933;
       --muted:#6b7280;
+      --accent:#ff9800;
     }
     *{box-sizing:border-box}
     body{
@@ -59,8 +60,16 @@
     }
     .btn:hover{transform:translateY(-2px)}
     .error{color:#b91c1c;text-align:center;margin-bottom:8px;font-weight:600}
-    .month-nav{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:14px 0}
-    .month-nav .center{font-weight:700;color:var(--text)}
+    
+    .month-nav{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      justify-content:space-between;
+      margin:14px 0;
+      flex-wrap: wrap;
+    }
+    .month-nav .center{font-weight:700;color:var(--text); font-size:16px;}
     .small-btn{padding:8px 12px;border-radius:8px;background:#f1f5f9;border:1px solid var(--border);cursor:pointer}
 
     /* أزرار التنقل بين الأسابيع والشهر */
@@ -70,6 +79,7 @@
       margin-bottom: 16px;
       overflow-x: auto;
       padding-bottom: 6px;
+      scrollbar-width: thin;
     }
     .tab-btn {
       flex: 1;
@@ -83,6 +93,7 @@
       color: var(--text);
       transition: all 0.2s ease;
       text-align: center;
+      white-space: nowrap;
     }
     .tab-btn.active {
       background: var(--primary);
@@ -91,13 +102,67 @@
     }
 
     table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}
-    th, td{border:1px solid var(--border);padding:8px;text-align:center;vertical-align:top}
+    th, td{border:1px solid var(--border);padding:8px;text-align:center;vertical-align:middle}
     th{background:linear-gradient(90deg,var(--primary),var(--secondary));color:#fff;font-weight:700}
-    td input[type="number"]{padding:8px}
+    td input[type="number"]{padding:8px; text-align:center;}
     td input[type="text"]{padding:8px}
     td textarea{min-height:56px;padding:8px}
-    .week-wrapper{margin-bottom:16px}
-    .week-summary{background:#f7fff8;border:1px solid #d1f3d9;padding:10px;border-radius:8px;margin-top:8px}
+    .week-wrapper{margin-bottom:24px}
+    
+    /* ملخص الأسبوع المالي وسعر الساعة */
+    .week-summary{
+      background:#f7fff8;
+      border:1px solid #d1f3d9;
+      padding:14px;
+      border-radius:8px;
+      margin-top:12px;
+    }
+    .price-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      background: #e8f5e9;
+      padding: 8px 12px;
+      border-radius: 8px;
+      max-width: 320px;
+    }
+    .price-input-wrapper label {
+      font-weight: bold;
+      color: var(--secondary);
+      white-space: nowrap;
+      font-size: 14px;
+    }
+    .price-input-wrapper input {
+      width: 100px;
+      padding: 6px;
+      border: 1px solid var(--primary);
+      border-radius: 6px;
+      text-align: center;
+    }
+    
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .summary-item {
+      background: #fff;
+      padding: 8px 12px;
+      border: 1px solid #e2f0d9;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .summary-item strong {
+      color: var(--secondary);
+    }
+    .summary-item.money {
+      border-left: 3px solid var(--accent);
+    }
+    .summary-item.money strong {
+      color: #e65100;
+    }
     
     /* عنوان الأسبوع داخل العرض الكامل للشهر */
     .week-title-header {
@@ -111,19 +176,63 @@
       text-align: center;
     }
 
-    .totals-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:14px}
-    .totals-card{background:#fff;border:1px solid var(--border);padding:10px 14px;border-radius:10px;min-width:150px;text-align:center}
+    .totals-row{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap:12px;
+      margin-top:18px;
+    }
+    .totals-card{
+      background:#fff;
+      border:1px solid var(--border);
+      padding:12px;
+      border-radius:10px;
+      text-align:center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .totals-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: var(--secondary);
+    }
+    .totals-card div {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .totals-card.highlight {
+      border: 2px solid var(--accent);
+      background: #fff8f0;
+    }
+    .totals-card.highlight strong {
+      color: #e65100;
+    }
 
-    /* ✅ نسخة الموبايل */
+    /* ✅ متجاوب تماماً لكل الشاشات والهواتف */
     @media(max-width:768px){
-      .month-nav{flex-direction:column;gap:10px}
+      .container {
+        padding: 8px;
+        margin: 8px auto;
+      }
+      .card {
+        padding: 12px;
+      }
+      .month-nav{
+        flex-direction:column;
+        gap:10px;
+        align-items: stretch;
+      }
+      .month-nav .center {
+        text-align: center;
+        order: -1; /* يجعل التاريخ في الأعلى */
+      }
       .tabs-container {
         gap: 4px;
       }
       .tab-btn {
-        font-size: 13px;
+        font-size: 12px;
         padding: 8px 4px;
-        min-width: 80px;
+        min-width: 75px;
       }
       table, thead, tbody, th, td, tr {
         display: block;
@@ -133,32 +242,51 @@
         margin-bottom: 16px;
         border: 1px solid var(--border);
         border-radius: 10px;
-        padding: 10px;
+        padding: 12px;
         background: #fff;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
       }
       table th {display: none;}
       table td {
         border: none;
-        padding: 6px 0;
+        padding: 8px 0;
         text-align: right;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px dashed #f0f0f0;
+      }
+      table td:last-child {
+        border-bottom: none;
       }
       table td:before {
         content: attr(data-label);
-        display: block;
         font-weight: bold;
-        margin-bottom: 4px;
         color: var(--secondary);
-        font-size: 14px;
+        font-size: 13px;
+        min-width: 100px;
       }
       input[type="number"], 
       input[type="text"], 
       textarea {
-        font-size: 16px;
-        width: 100%;
-        padding: 12px;
+        font-size: 15px;
+        width: 60%; /* مناسب للموبايل ليظهر بجانب التسمية */
+        padding: 8px;
       }
-      textarea {min-height: 80px;}
+      textarea {
+        min-height: 60px;
+      }
+      .price-input-wrapper {
+        max-width: 100%;
+        justify-content: space-between;
+      }
+      .price-input-wrapper input {
+        width: 50%;
+      }
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -180,7 +308,7 @@
       <div class="month-nav">
         <button class="small-btn" id="prevMonthBtn">⬅ الشهر السابق</button>
         <div class="center" id="monthLabel">--</div>
-        <div style="display:flex;gap:8px">
+        <div style="display:flex; gap:8px; justify-content: center;">
           <button class="small-btn" id="logoutBtn">تسجيل خروج</button>
           <button class="small-btn" id="nextMonthBtn">الشهر التالي ➡</button>
         </div>
@@ -197,10 +325,15 @@
 
       <div id="weeksContainer"></div>
 
-      <div class="totals-row" style="margin-top:12px">
+      <!-- الإجماليات الشهرية وسعرها المالي -->
+      <div class="totals-row">
         <div class="totals-card"><strong>ساعات أساسية (شهري)</strong><div id="monthBasic">0</div></div>
         <div class="totals-card"><strong>ساعات إضافية (شهري)</strong><div id="monthExtra">0</div></div>
-        <div class="totals-card"><strong>الإجمالي (شهري)</strong><div id="monthTotal">0</div></div>
+        <div class="totals-card"><strong>الإجمالي (ساعات شهري)</strong><div id="monthTotal">0</div></div>
+        
+        <div class="totals-card highlight"><strong>مبلغ الساعات الأساسية (شهري)</strong><div id="monthBasicPrice">0</div></div>
+        <div class="totals-card highlight"><strong>مبلغ الساعات الإضافية (شهري)</strong><div id="monthExtraPrice">0</div></div>
+        <div class="totals-card highlight"><strong>المبلغ الإجمالي المستحق</strong><div id="monthTotalPrice">0</div></div>
       </div>
     </div>
 
@@ -213,7 +346,7 @@
 const AUTH_USER = 'aboyoussef';
 const AUTH_PASS = 'aboyoussef';
 
-// تعديل ترتيب الأيام ليبدأ بالاثنين وينتهي بالأحد
+// ترتيب الأيام من الاثنين للأحد
 const days = ["الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت","الأحد"];
 
 let current = new Date();
@@ -269,7 +402,6 @@ function switchTab(tabId) {
   const buttons = document.querySelectorAll('.tab-btn');
   buttons.forEach(btn => btn.classList.remove('active'));
   
-  // تفعيل الزر المناسب
   let targetIndex = 0;
   if (tabId === 'week2') targetIndex = 1;
   else if (tabId === 'week3') targetIndex = 2;
@@ -278,7 +410,6 @@ function switchTab(tabId) {
   
   buttons[targetIndex].classList.add('active');
   
-  // إعادة بناء الواجهة لعرض البيانات المخصصة للتبويب النشط
   renderMonth();
 }
 
@@ -301,7 +432,7 @@ function renderMonth(){
     const wrapper = document.createElement('div');
     wrapper.className = 'week-wrapper';
 
-    // إضافة عنوان فوق كل أسبوع فقط في حالة عرض الشهر كامل
+    // إضافة عنوان فوق كل أسبوع في حالة عرض الشهر كامل
     if (activeTab === 'fullMonth') {
       const weekTitle = document.createElement('div');
       weekTitle.className = 'week-title-header';
@@ -333,19 +464,48 @@ function renderMonth(){
     table.innerHTML = head + rows;
     wrapper.appendChild(table);
 
+    // حساب المجاميع والأسعار للأسبوع الحالي
     const weekTotals = calcWeekTotals(data,w);
+    const hourlyRateKey = `rate_week_${w}`;
+    const hourlyRate = data[hourlyRateKey] || 0;
+
+    const basicCost = weekTotals.basic * hourlyRate;
+    const extraCost = weekTotals.extra * hourlyRate;
+    const totalCost = weekTotals.total * hourlyRate;
+
     const summary = document.createElement('div');
     summary.className = 'week-summary';
-    summary.innerHTML = `<strong>مجموع الأسبوع ${w}</strong>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
-        <div>ساعات أساسية: <strong>${weekTotals.basic}</strong></div>
-        <div>ساعات إضافية: <strong>${weekTotals.extra}</strong></div>
-        <div>الإجمالي: <strong>${weekTotals.total}</strong></div>
+    summary.innerHTML = `
+      <div class="price-input-wrapper">
+        <label>سعر الساعة للأسبوع ${w}:</label>
+        <input type="number" min="0" value="${hourlyRate || ''}" placeholder="0" onchange="onRateChange(${w}, this)">
+      </div>
+      <strong>مجموع الأسبوع ${w}</strong>
+      <div class="summary-grid">
+        <div class="summary-item">ساعات أساسية: <strong>${weekTotals.basic}</strong></div>
+        <div class="summary-item">ساعات إضافية: <strong>${weekTotals.extra}</strong></div>
+        <div class="summary-item">إجمالي الساعات: <strong>${weekTotals.total}</strong></div>
+        
+        <div class="summary-item money">مبلغ الأساسي: <strong>${basicCost.toFixed(2)}</strong></div>
+        <div class="summary-item money">مبلغ الإضافي: <strong>${extraCost.toFixed(2)}</strong></div>
+        <div class="summary-item money">الإجمالي المالي: <strong>${totalCost.toFixed(2)}</strong></div>
       </div>`;
+    
     wrapper.appendChild(summary);
     container.appendChild(wrapper);
   }
   calcMonthTotalsAndUpdateUI();
+}
+
+// دالة لحفظ سعر الساعة عند التغيير
+function onRateChange(week, el) {
+  let val = parseFloat(el.value);
+  if (isNaN(val) || val < 0) val = 0;
+  
+  const data = loadData(currentYear, currentMonth);
+  data[`rate_week_${week}`] = val;
+  saveDataFor(currentYear, currentMonth, data);
+  renderMonth();
 }
 
 function onFieldChange(week, day, el, field){
@@ -371,13 +531,32 @@ function calcWeekTotals(data, week){
   });
   return {basic, extra, total: basic + extra};
 }
+
 function calcMonthTotalsAndUpdateUI(){
   const data = loadData(currentYear,currentMonth);
-  let mb=0,me=0;
-  for(let w=1; w<=4; w++){const t=calcWeekTotals(data,w);mb+=t.basic;me+=t.extra;}
-  document.getElementById('monthBasic').innerText = mb;
-  document.getElementById('monthExtra').innerText = me;
-  document.getElementById('monthTotal').innerText = mb + me;
+  let totalBasicHours = 0, totalExtraHours = 0;
+  let totalBasicMoney = 0, totalExtraMoney = 0;
+
+  for(let w=1; w<=4; w++){
+    const t = calcWeekTotals(data,w);
+    const rate = parseFloat(data[`rate_week_${w}`]) || 0;
+
+    totalBasicHours += t.basic;
+    totalExtraHours += t.extra;
+
+    totalBasicMoney += t.basic * rate;
+    totalExtraMoney += t.extra * rate;
+  }
+
+  // تحديث واجهة إجمالي الساعات
+  document.getElementById('monthBasic').innerText = totalBasicHours;
+  document.getElementById('monthExtra').innerText = totalExtraHours;
+  document.getElementById('monthTotal').innerText = totalBasicHours + totalExtraHours;
+
+  // تحديث واجهة المبالغ المستحقة
+  document.getElementById('monthBasicPrice').innerText = totalBasicMoney.toFixed(2) + ' ج.م';
+  document.getElementById('monthExtraPrice').innerText = totalExtraMoney.toFixed(2) + ' ج.م';
+  document.getElementById('monthTotalPrice').innerText = (totalBasicMoney + totalExtraMoney).toFixed(2) + ' ج.م';
 }
 
 document.getElementById('prevMonthBtn').addEventListener('click', ()=>{if(currentMonth===0){currentMonth=11;currentYear--;}else currentMonth--;renderMonth();});
@@ -385,6 +564,7 @@ document.getElementById('nextMonthBtn').addEventListener('click', ()=>{if(curren
 
 window.addEventListener('load', ()=>{if(isAuthenticated()) showMain(); else showLogin();});
 window.onFieldChange = onFieldChange;
+window.onRateChange = onRateChange;
 window.renderMonth = renderMonth;
 window.switchTab = switchTab;
 </script>
