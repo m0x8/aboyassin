@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>جدول ساعات العمل — محمي</title>
+  <style>
+    :root{
+      --primary:#4CAF50;
+      --secondary:#2E7D32;
+      --bg:#f7faf6;
+      --card:#fff;
+      --border:#e0e6e0;
+      --text:#1f2933;
+      --muted:#6b7280;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Tajawal", system-ui, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.5;
+    }
+    .container{
+      max-width:1100px;
+      margin:24px auto;
+      padding:18px;
+    }
+    .card{
+      background:var(--card);
+      border-radius:12px;
+      padding:20px;
+      box-shadow:0 6px 20px rgba(16,24,40,0.06);
+      border:1px solid var(--border);
+    }
+
+    h1,h2,h3{margin:0 0 12px 0;color:var(--secondary);text-align:center}
+    .login, .main{margin-top:18px}
+    .field{margin:10px 0}
+    input[type="text"], input[type="password"], input[type="number"], textarea, button {
+      width:100%;
+      padding:12px 14px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      font-size:15px;
+    }
+    textarea{min-height:64px; resize:vertical; padding-top:10px}
+    .btn{
+      background:var(--primary);
+      color:#fff;
+      border:none;
+      cursor:pointer;
+      font-weight:700;
+      transition:all .18s ease;
+      box-shadow: 0 4px 10px rgba(46,125,50,0.12);
+    }
+    .btn:hover{transform:translateY(-2px)}
+    .error{color:#b91c1c;text-align:center;margin-bottom:8px;font-weight:600}
+    .month-nav{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:14px 0}
+    .month-nav .center{font-weight:700;color:var(--text)}
+    .small-btn{padding:8px 12px;border-radius:8px;background:#f1f5f9;border:1px solid var(--border);cursor:pointer}
+
+    /* أزرار التنقل بين الأسابيع والشهر */
+    .tabs-container {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+    .tab-btn {
+      flex: 1;
+      min-width: 100px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: var(--text);
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}
+    th, td{border:1px solid var(--border);padding:8px;text-align:center;vertical-align:top}
+    th{background:linear-gradient(90deg,var(--primary),var(--secondary));color:#fff;font-weight:700}
+    td input[type="number"]{padding:8px}
+    td input[type="text"]{padding:8px}
+    td textarea{min-height:56px;padding:8px}
+    .week-wrapper{margin-bottom:16px}
+    .week-summary{background:#f7fff8;border:1px solid #d1f3d9;padding:10px;border-radius:8px;margin-top:8px}
+    
+    /* عنوان الأسبوع داخل العرض الكامل للشهر */
+    .week-title-header {
+      background: var(--secondary);
+      color: #fff;
+      padding: 8px;
+      margin-top: 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .totals-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+    .totals-card{background:#fff;border:1px solid var(--border);padding:10px 14px;border-radius:10px;min-width:150px;text-align:center}
+
+    /* ✅ نسخة الموبايل */
+    @media(max-width:768px){
+      .month-nav{flex-direction:column;gap:10px}
+      .tabs-container {
+        gap: 4px;
+      }
+      .tab-btn {
+        font-size: 13px;
+        padding: 8px 4px;
+        min-width: 80px;
+      }
+      table, thead, tbody, th, td, tr {
+        display: block;
+        width: 100%;
+      }
+      table tr {
+        margin-bottom: 16px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px;
+        background: #fff;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      }
+      table th {display: none;}
+      table td {
+        border: none;
+        padding: 6px 0;
+        text-align: right;
+      }
+      table td:before {
+        content: attr(data-label);
+        display: block;
+        font-weight: bold;
+        margin-bottom: 4px;
+        color: var(--secondary);
+        font-size: 14px;
+      }
+      input[type="number"], 
+      input[type="text"], 
+      textarea {
+        font-size: 16px;
+        width: 100%;
+        padding: 12px;
+      }
+      textarea {min-height: 80px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card login" id="loginCard">
+      <h1>تسجيل الدخول</h1>
+      <p style="text-align:center;color:var(--muted)">ادخل اسم المستخدم وكلمة السر للمتابعة</p>
+      <div id="loginError" class="error" style="display:none"></div>
+      <div class="field"><input id="username" type="text" placeholder="اسم المستخدم" autocomplete="off"></div>
+      <div class="field"><input id="password" type="password" placeholder="كلمة السر" autocomplete="off"></div>
+      <div class="field"><button class="btn" id="loginBtn">دخول</button></div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="card main" id="mainCard" style="display:none">
+      <h2>جدول ساعات العمل</h2>
+
+      <div class="month-nav">
+        <button class="small-btn" id="prevMonthBtn">⬅ الشهر السابق</button>
+        <div class="center" id="monthLabel">--</div>
+        <div style="display:flex;gap:8px">
+          <button class="small-btn" id="logoutBtn">تسجيل خروج</button>
+          <button class="small-btn" id="nextMonthBtn">الشهر التالي ➡</button>
+        </div>
+      </div>
+
+      <!-- أزرار اختيار الأسبوع أو الشهر كامل -->
+      <div class="tabs-container">
+        <button class="tab-btn active" onclick="switchTab('week1')">الأسبوع 1</button>
+        <button class="tab-btn" onclick="switchTab('week2')">الأسبوع 2</button>
+        <button class="tab-btn" onclick="switchTab('week3')">الأسبوع 3</button>
+        <button class="tab-btn" onclick="switchTab('week4')">الأسبوع 4</button>
+        <button class="tab-btn" onclick="switchTab('fullMonth')">بيانات الشهر كامل</button>
+      </div>
+
+      <div id="weeksContainer"></div>
+
+      <div class="totals-row" style="margin-top:12px">
+        <div class="totals-card"><strong>ساعات أساسية (شهري)</strong><div id="monthBasic">0</div></div>
+        <div class="totals-card"><strong>ساعات إضافية (شهري)</strong><div id="monthExtra">0</div></div>
+        <div class="totals-card"><strong>الإجمالي (شهري)</strong><div id="monthTotal">0</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;text-align:center;color:var(--muted);font-size:13px">
+    Created By Mohamed
+    </div>
+  </div>
+
+<script>
+const AUTH_USER = 'aboyoussef';
+const AUTH_PASS = 'aboyoussef';
+const days = ["السبت","الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة"];
+let current = new Date();
+let currentMonth = current.getMonth();
+let currentYear = current.getFullYear();
+
+// تتبع الصفحة/الأسبوع النشط حالياً
+let activeTab = 'week1'; 
+
+const loginCard = document.getElementById('loginCard');
+const mainCard = document.getElementById('mainCard');
+const loginBtn = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const loginError = document.getElementById('loginError');
+
+function isAuthenticated(){return sessionStorage.getItem('work_auth') === '1';}
+function showLogin(){loginCard.style.display = 'block';mainCard.style.display = 'none';}
+function showMain(){loginCard.style.display = 'none';mainCard.style.display = 'block';renderMonth();}
+function loginAttempt(){
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value;
+  if(u === AUTH_USER && p === AUTH_PASS){
+    sessionStorage.setItem('work_auth','1');
+    loginError.style.display = 'none';
+    document.getElementById('password').value = '';
+    showMain();
+  } else {
+    loginError.innerText = '❌ برجاء إدخال اسم المستخدم أو كلمة السر الصحيحة';
+    loginError.style.display = 'block';
+  }
+}
+function logout(){sessionStorage.removeItem('work_auth');showLogin();}
+
+loginBtn.addEventListener('click', loginAttempt);
+logoutBtn.addEventListener('click', logout);
+document.getElementById('password').addEventListener('keydown', e=>{if(e.key === 'Enter') loginAttempt();});
+document.getElementById('username').addEventListener('keydown', e=>{if(e.key === 'Enter') document.getElementById('password').focus();});
+
+function storageKey(year,month){return `workhours_${year}_${month}`;}
+function loadData(year,month){const raw = localStorage.getItem(storageKey(year,month));return raw ? JSON.parse(raw) : {};}
+function saveDataFor(year,month,data){localStorage.setItem(storageKey(year,month), JSON.stringify(data));}
+
+function monthLabelText(y,m){
+  const monthNames = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+  return `${y} - ${m+1} (${monthNames[m] || ''})`;
+}
+
+// دالة لتغيير التبويب النشط
+function switchTab(tabId) {
+  activeTab = tabId;
+  
+  // تحديث شكل الأزرار لتحديد الزر النشط
+  const buttons = document.querySelectorAll('.tab-btn');
+  buttons.forEach(btn => btn.classList.remove('active'));
+  
+  // تفعيل الزر المناسب
+  let targetIndex = 0;
+  if (tabId === 'week2') targetIndex = 1;
+  else if (tabId === 'week3') targetIndex = 2;
+  else if (tabId === 'week4') targetIndex = 3;
+  else if (tabId === 'fullMonth') targetIndex = 4;
+  
+  buttons[targetIndex].classList.add('active');
+  
+  // إعادة بناء الواجهة لعرض البيانات المخصصة للتبويب النشط
+  renderMonth();
+}
+
+function renderMonth(){
+  document.getElementById('monthLabel').innerText = monthLabelText(currentYear,currentMonth);
+  const container = document.getElementById('weeksContainer');
+  container.innerHTML = '';
+  const data = loadData(currentYear,currentMonth);
+
+  // تحديد ما سيتم عرضه بناءً على التبويب النشط
+  let startWeek = 1;
+  let endWeek = 4;
+  
+  if (activeTab === 'week1') { startWeek = 1; endWeek = 1; }
+  else if (activeTab === 'week2') { startWeek = 2; endWeek = 2; }
+  else if (activeTab === 'week3') { startWeek = 3; endWeek = 3; }
+  else if (activeTab === 'week4') { startWeek = 4; endWeek = 4; }
+  // لو التبويب fullMonth، startWeek و endWeek هيفضلوا 1 و 4 علشان يعرض الشهر كامل
+
+  for(let w = startWeek; w <= endWeek; w++){
+    const wrapper = document.createElement('div');
+    wrapper.className = 'week-wrapper';
+
+    // إضافة عنوان فوق كل أسبوع فقط في حالة عرض الشهر كامل لتجنب الخلط
+    if (activeTab === 'fullMonth') {
+      const weekTitle = document.createElement('div');
+      weekTitle.className = 'week-title-header';
+      weekTitle.innerText = `بيانات الأسبوع ${w}`;
+      wrapper.appendChild(weekTitle);
+    }
+
+    const table = document.createElement('table');
+    let head = `<tr>
+      <th>اليوم</th><th>ساعات أساسية</th><th>ساعات إضافية</th><th>المكان</th><th>ملاحظات</th>
+    </tr>`;
+    let rows = '';
+    days.forEach(day => {
+      const key = `${w}_${day}`;
+      const entry = data[key] || {basic:'', extra:'', place:'', note:''};
+      const basicVal = entry.basic || '';
+      const extraVal = entry.extra || '';
+      const placeVal = entry.place || '';
+      const noteVal  = entry.note  || '';
+
+      rows += `<tr>
+        <td data-label="اليوم">${day}</td>
+        <td data-label="ساعات أساسية"><input type="number" min="0" max="99" value="${basicVal}" onchange="onFieldChange(${w},'${day}',this,'basic')"></td>
+        <td data-label="ساعات إضافية"><input type="number" min="0" max="99" value="${extraVal}" onchange="onFieldChange(${w},'${day}',this,'extra')"></td>
+        <td data-label="المكان"><input type="text" value="${placeVal}" onchange="onFieldChange(${w},'${day}',this,'place')"></td>
+        <td data-label="ملاحظات"><textarea onchange="onFieldChange(${w},'${day}',this,'note')">${noteVal}</textarea></td>
+      </tr>`;
+    });
+    table.innerHTML = head + rows;
+    wrapper.appendChild(table);
+
+    const weekTotals = calcWeekTotals(data,w);
+    const summary = document.createElement('div');
+    summary.className = 'week-summary';
+    summary.innerHTML = `<strong>مجموع الأسبوع ${w}</strong>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+        <div>ساعات أساسية: <strong>${weekTotals.basic}</strong></div>
+        <div>ساعات إضافية: <strong>${weekTotals.extra}</strong></div>
+        <div>الإجمالي: <strong>${weekTotals.total}</strong></div>
+      </div>`;
+    wrapper.appendChild(summary);
+    container.appendChild(wrapper);
+  }
+  calcMonthTotalsAndUpdateUI();
+}
+
+function onFieldChange(week, day, el, field){
+  let val = el.value;
+  if(field === 'basic' || field === 'extra'){
+    val = val.replace(/[^\d]/g,'');
+    if(val !== ''){let n = parseInt(val,10);if(isNaN(n)) n='';else{if(n<0)n=0;if(n>99)n=99;}val=n+'';}
+    el.value = val;
+  }
+  const data = loadData(currentYear,currentMonth);
+  const entryKey = `${week}_${day}`;
+  if(!data[entryKey]) data[entryKey] = {basic:'',extra:'',place:'',note:''};
+  data[entryKey][field] = val;
+  saveDataFor(currentYear,currentMonth,data);
+  renderMonth();
+}
+
+function calcWeekTotals(data, week){
+  let basic = 0, extra = 0;
+  days.forEach(d=>{
+    const e = data[`${week}_${d}`];
+    if(e){basic += Number(e.basic)||0;extra += Number(e.extra)||0;}
+  });
+  return {basic, extra, total: basic + extra};
+}
+function calcMonthTotalsAndUpdateUI(){
+  const data = loadData(currentYear,currentMonth);
+  let mb=0,me=0;
+  for(let w=1; w<=4; w++){const t=calcWeekTotals(data,w);mb+=t.basic;me+=t.extra;}
+  document.getElementById('monthBasic').innerText = mb;
+  document.getElementById('monthExtra').innerText = me;
+  document.getElementById('monthTotal').innerText = mb + me;
+}
+
+document.getElementById('prevMonthBtn').addEventListener('click', ()=>{if(currentMonth===0){currentMonth=11;currentYear--;}else currentMonth--;renderMonth();});
+document.getElementById('nextMonthBtn').addEventListener('click', ()=>{if(currentMonth===11){currentMonth=0;currentYear++;}else currentMonth++;renderMonth();});
+
+window.addEventListener('load', ()=>{if(isAuthenticated()) showMain(); else showLogin();});
+window.onFieldChange = onFieldChange;
+window.renderMonth = renderMonth;
+window.switchTab = switchTab;
+</script>
+</body>
+</html>
