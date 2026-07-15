@@ -224,7 +224,7 @@
       }
       .month-nav .center {
         text-align: center;
-        order: -1; /* يجعل التاريخ في الأعلى */
+        order: -1;
       }
       .tabs-container {
         gap: 4px;
@@ -271,7 +271,7 @@
       input[type="text"], 
       textarea {
         font-size: 15px;
-        width: 60%; /* مناسب للموبايل ليظهر بجانب التسمية */
+        width: 60%;
         padding: 8px;
       }
       textarea {
@@ -325,7 +325,7 @@
 
       <div id="weeksContainer"></div>
 
-      <!-- الإجماليات الشهرية وسعرها المالي -->
+      <!-- الإجماليات الشهرية وسعرها المالي باليورو -->
       <div class="totals-row">
         <div class="totals-card"><strong>ساعات أساسية (شهري)</strong><div id="monthBasic">0</div></div>
         <div class="totals-card"><strong>ساعات إضافية (شهري)</strong><div id="monthExtra">0</div></div>
@@ -477,7 +477,7 @@ function renderMonth(){
     summary.className = 'week-summary';
     summary.innerHTML = `
       <div class="price-input-wrapper">
-        <label>سعر الساعة للأسبوع ${w}:</label>
+        <label>سعر الساعة للأسبوع ${w} (€):</label>
         <input type="number" min="0" value="${hourlyRate || ''}" placeholder="0" onchange="onRateChange(${w}, this)">
       </div>
       <strong>مجموع الأسبوع ${w}</strong>
@@ -486,9 +486,9 @@ function renderMonth(){
         <div class="summary-item">ساعات إضافية: <strong>${weekTotals.extra}</strong></div>
         <div class="summary-item">إجمالي الساعات: <strong>${weekTotals.total}</strong></div>
         
-        <div class="summary-item money">مبلغ الأساسي: <strong>${basicCost.toFixed(2)}</strong></div>
-        <div class="summary-item money">مبلغ الإضافي: <strong>${extraCost.toFixed(2)}</strong></div>
-        <div class="summary-item money">الإجمالي المالي: <strong>${totalCost.toFixed(2)}</strong></div>
+        <div class="summary-item money">مبلغ الأساسي: <strong>€${basicCost.toFixed(2)}</strong></div>
+        <div class="summary-item money">مبلغ الإضافي: <strong>€${extraCost.toFixed(2)}</strong></div>
+        <div class="summary-item money">الإجمالي المالي: <strong>€${totalCost.toFixed(2)}</strong></div>
       </div>`;
     
     wrapper.appendChild(summary);
@@ -553,10 +553,10 @@ function calcMonthTotalsAndUpdateUI(){
   document.getElementById('monthExtra').innerText = totalExtraHours;
   document.getElementById('monthTotal').innerText = totalBasicHours + totalExtraHours;
 
-  // تحديث واجهة المبالغ المستحقة
-  document.getElementById('monthBasicPrice').innerText = totalBasicMoney.toFixed(2) + ' ج.م';
-  document.getElementById('monthExtraPrice').innerText = totalExtraMoney.toFixed(2) + ' ج.م';
-  document.getElementById('monthTotalPrice').innerText = (totalBasicMoney + totalExtraMoney).toFixed(2) + ' ج.م';
+  // تحديث واجهة المبالغ المستحقة باليورو
+  document.getElementById('monthBasicPrice').innerText = '€' + totalBasicMoney.toFixed(2);
+  document.getElementById('monthExtraPrice').innerText = '€' + totalExtraMoney.toFixed(2);
+  document.getElementById('monthTotalPrice').innerText = '€' + (totalBasicMoney + totalExtraMoney).toFixed(2);
 }
 
 document.getElementById('prevMonthBtn').addEventListener('click', ()=>{if(currentMonth===0){currentMonth=11;currentYear--;}else currentMonth--;renderMonth();});
